@@ -74,7 +74,7 @@ namespace Macro_Browser
 			Macros = new MacroDataCollection();
 			var rx_define = new Regex(@"^\s*#define\s+(?<name>[a-z_][a-z_0-9:]*).*", RegexOptions.IgnoreCase);
 			var rx_enddef = new Regex(@"^.*?#enddef\s*$", RegexOptions.IgnoreCase);
-			var files = Directory.GetFiles(Settings.MacroDir, "*.cfg");
+			var files = Directory.GetFiles(Settings.MacroPath, "*.cfg");
 			Array.Sort(files);
 			Match m;
 			var code = new List<string>();

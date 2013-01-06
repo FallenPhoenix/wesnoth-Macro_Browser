@@ -8,31 +8,49 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace Macro_Browser
 {
 	public static class Settings
 	{
-		public static string Ini {get; set;}
-		public static string MacroDir
+		#region Данные программы
+		public static string GamePath;
+		public static int Window_Width;
+		public static int Window_Height;
+		public static int Window_Separator;
+		
+		public static string MacroPath
 		{
-			get {return GameDir + @"data\core\macros\";}
+			get {return GamePath + @"\data\core\macros\";}
 		}
+		#endregion
 		
-		public static string GameDir;
-		public static int Window_Width, Window_Height, Window_Separator;
 		
+		public static string Ini {get; set;}
 		
 		public static bool Load()
 		{
 			try
 			{
-				var config = ParseIni(Ini);
-				config.TryGetValue("GamePath", out GameDir);
-				if (!GameDir.EndsWith("\\")) GameDir += "\\";
-				Window_Width = GetValue(ref config, "Window:Width");
-				Window_Height = GetValue(ref config, "Window:Height");
-				Window_Separator = GetValue(ref config, "Window:Separator");
+				var config = ParseIni(Ini, "_");
+				var fields = typeof(Settings).GetFields();
+				string val; int ival;
+				foreach (FieldInfo field in fields)
+				{
+					var type = field.FieldType.ToString();
+					if (!config.TryGetValue(field.Name.ToUpper(), out val)) val = string.Empty;
+					switch (type)
+					{
+						case "System.String":
+							field.SetValue(null, val);
+							break;
+						case "System.Int32":
+							if (!int.TryParse(val, out ival)) ival = -1;
+							field.SetValue(null, ival);
+							break;
+					}
+				}
 				return true;
 			}
 			catch
@@ -43,18 +61,33 @@ namespace Macro_Browser
 		
 		public static bool Save()
 		{
-			return false;
+			try
+			{
+				var fields = typeof(Settings).GetFields();
+				var rx_split = new Regex("((?<category>[^_]*)_)?(?<key>[^_]*)");
+				var data = new List<string>();
+				var category = string.Empty;
+				foreach (FieldInfo field in fields)
+				{
+					var m = rx_split.Match(field.Name);
+					if (category != m.Groups["category"].Value)
+					{
+						category = m.Groups["category"].Value;
+						data.Add(""); data.Add("[" + category + "]");
+					}
+					data.Add(m.Groups["key"].Value + "=" + field.GetValue(null));
+				}
+				File.WriteAllLines(Ini, data.ToArray());
+				return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
 		}
-
 		
-		static int GetValue(ref Dictionary<string, string> config, string key)
-		{
-			string sval; if (!config.TryGetValue(key, out sval)) return -1;
-			int ival; if (!int.TryParse(sval, out ival)) return -1;
-			return ival;
-		}
 		
-		public static Dictionary<string, string> ParseIni(string file)
+		static Dictionary<string, string> ParseIni(string file, string section_separator)
 		{
 			var result = new Dictionary<string, string>();
 			var data = File.ReadAllLines(Ini);
@@ -65,9 +98,9 @@ namespace Macro_Browser
 			foreach (string str in data)
 			{
 				if ((m = rx_category.Match(str)).Success)
-					cat = m.Groups["name"].Value + ":";
+					cat = m.Groups["name"].Value + section_separator;
 				else if ((m = rx_param.Match(str)).Success)
-					result.Add(cat + m.Groups["key"].Value, m.Groups["value"].Value);
+					result.Add((cat + m.Groups["key"].Value).ToUpper(), m.Groups["value"].Value);
 			}
 			return result;
 		}
