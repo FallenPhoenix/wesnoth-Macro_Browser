@@ -13,7 +13,15 @@ namespace Macro_Browser
 {
 	public static class Settings
 	{
-		public static string Ini, GameDir, MacroDir;
+		public static string Ini {get; set;}
+		public static string MacroDir
+		{
+			get {return GameDir + @"data\core\macros\";}
+		}
+		
+		public static string GameDir;
+		public static int Window_Width, Window_Height, Window_Separator;
+		
 		
 		public static bool Load()
 		{
@@ -22,7 +30,9 @@ namespace Macro_Browser
 				var config = ParseIni(Ini);
 				config.TryGetValue("GamePath", out GameDir);
 				if (!GameDir.EndsWith("\\")) GameDir += "\\";
-				MacroDir = GameDir + @"data\core\macros\";
+				Window_Width = GetValue(ref config, "Window:Width");
+				Window_Height = GetValue(ref config, "Window:Height");
+				Window_Separator = GetValue(ref config, "Window:Separator");
 				return true;
 			}
 			catch
@@ -34,6 +44,14 @@ namespace Macro_Browser
 		public static bool Save()
 		{
 			return false;
+		}
+
+		
+		static int GetValue(ref Dictionary<string, string> config, string key)
+		{
+			string sval; if (!config.TryGetValue(key, out sval)) return -1;
+			int ival; if (!int.TryParse(sval, out ival)) return -1;
+			return ival;
 		}
 		
 		public static Dictionary<string, string> ParseIni(string file)

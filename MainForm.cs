@@ -24,18 +24,25 @@ namespace Macro_Browser
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
+			
+			Settings.Ini = Path.ChangeExtension(Application.ExecutablePath, "ini");
+			Settings.Load();
+			if (Settings.Window_Width > 0) this.Width = Settings.Window_Width;
+			if (Settings.Window_Height > 0) this.Height = Settings.Window_Height;
+			if (Settings.Window_Separator > 0) splitContainer.SplitterDistance = Settings.Window_Separator;
 		}
 		
 		
 		void MainForm_Load(object sender, EventArgs e)
 		{
-			Settings.Ini = Path.ChangeExtension(Application.ExecutablePath, "ini");
-			Settings.Load();
 			LoadMacros();
 		}
 		
 		void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			Settings.Window_Width = this.Width;
+			Settings.Window_Height = this.Height;
+			Settings.Window_Separator = splitContainer.SplitterDistance;
 			Settings.Save();
 		}
 		
