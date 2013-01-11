@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace Macro_Browser
 {
-	/// <summary>Description of MainForm.</summary>
+	/// <summary> Главное окно программы. </summary>
 	public partial class MainForm : Form
 	{
 		MacroDataCollection Macros = new MacroDataCollection();
@@ -52,6 +52,11 @@ namespace Macro_Browser
 			{
 				case "tsbUpdate": LoadMacros(); break;
 				case "tsbWordWrap": tCode.WordWrap = tsbWordWrap.Checked = !tsbWordWrap.Checked; break;
+				case "tsbSettings":
+					var settings = new SettingsForm();
+					if (settings.ShowDialog() != DialogResult.OK) break;
+					if (settings.NeedRefresh) LoadMacros();
+					break;
 			}
 		}
 		
@@ -116,9 +121,20 @@ namespace Macro_Browser
 			}
 			tvList.Sort();
 			tvList.EndUpdate();
+			
+			// Фильтр
+			// TODO: Сделать обработку фильтра и сносный внешний вид для этой менюшки: по дефолту слишком большие отступы.
 			tsbFilter.DropDownItems.Clear();
 			foreach (string file in files)
-				tsbFilter.DropDownItems.Add(Path.GetFileName(file));
+			{
+				var item = new ToolStripMenuItem()
+				{
+					Text = Path.GetFileName(file),
+					Height = 12,
+					CheckOnClick = true
+				};
+				tsbFilter.DropDownItems.Add(item);
+			}
 			#endregion
 		}
 

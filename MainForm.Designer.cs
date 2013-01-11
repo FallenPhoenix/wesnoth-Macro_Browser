@@ -42,6 +42,7 @@ namespace Macro_Browser
 			this.tsToolBar = new System.Windows.Forms.ToolStrip();
 			this.tsbUpdate = new System.Windows.Forms.ToolStripButton();
 			this.tsbFilter = new System.Windows.Forms.ToolStripDropDownButton();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.tsbWordWrap = new System.Windows.Forms.ToolStripButton();
 			this.tsbSettings = new System.Windows.Forms.ToolStripButton();
 			this.splitContainer.Panel1.SuspendLayout();
@@ -137,11 +138,23 @@ namespace Macro_Browser
 			// tsbFilter
 			// 
 			this.tsbFilter.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbFilter.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+									this.toolStripMenuItem1});
 			this.tsbFilter.Image = ((System.Drawing.Image)(resources.GetObject("tsbFilter.Image")));
 			this.tsbFilter.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbFilter.Name = "tsbFilter";
 			this.tsbFilter.Size = new System.Drawing.Size(29, 22);
-			this.tsbFilter.Text = "Фильтр";
+			this.tsbFilter.Text = "Фильтр по файлам";
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Checked = true;
+			this.toolStripMenuItem1.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.toolStripMenuItem1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(166, 22);
+			this.toolStripMenuItem1.Text = "Отладочный итем";
 			// 
 			// tsbWordWrap
 			// 
@@ -150,7 +163,7 @@ namespace Macro_Browser
 			this.tsbWordWrap.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbWordWrap.Name = "tsbWordWrap";
 			this.tsbWordWrap.Size = new System.Drawing.Size(23, 22);
-			this.tsbWordWrap.Text = "Переносить строки";
+			this.tsbWordWrap.Text = "Переносить строки кода";
 			// 
 			// tsbSettings
 			// 
@@ -171,6 +184,7 @@ namespace Macro_Browser
 			this.MinimumSize = new System.Drawing.Size(400, 250);
 			this.Name = "MainForm";
 			this.ShowIcon = false;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Macro Browser";
 			this.Load += new System.EventHandler(this.MainForm_Load);
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
@@ -184,6 +198,7 @@ namespace Macro_Browser
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripDropDownButton tsbFilter;
 		private System.Windows.Forms.ToolStripButton tsbSettings;
 		private System.Windows.Forms.ToolStripButton tsbWordWrap;
