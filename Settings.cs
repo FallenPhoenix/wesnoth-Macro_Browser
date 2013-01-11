@@ -16,6 +16,8 @@ namespace Macro_Browser
 	{
 		#region Данные программы
 		public static string GamePath;
+		public static string Viewer;
+		public static string ViewerArgs;
 		public static int Window_Width;
 		public static int Window_Height;
 		public static int Window_Separator;

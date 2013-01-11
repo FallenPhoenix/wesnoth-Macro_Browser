@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace Macro_Browser
 {
@@ -17,6 +18,8 @@ namespace Macro_Browser
 	public partial class MainForm : Form
 	{
 		MacroDataCollection Macros = new MacroDataCollection();
+		ViewerModes ViewerMode = ViewerModes.Enabled;
+		string GoToMacro = "";
 		
 		public MainForm(string[] args)
 		{
@@ -30,12 +33,35 @@ namespace Macro_Browser
 			if (Settings.Window_Width > 0) this.Width = Settings.Window_Width;
 			if (Settings.Window_Height > 0) this.Height = Settings.Window_Height;
 			if (Settings.Window_Separator > 0) splitContainer.SplitterDistance = Settings.Window_Separator;
+			
+			foreach (string arg in args)
+			{
+				var kvp = arg.ToUpper().Split(new[]{'='}, 2);
+				switch (kvp[0])
+				{
+					case "-GOTO": GoToMacro = kvp[1]; break;
+					case "-OPENVIEWER":
+						try
+						{
+							var mode = (ViewerModes)Enum.Parse(typeof(ViewerModes), kvp[1], true);
+							ViewerMode = mode;
+						}
+						catch {}
+						break;
+				}
+			}
 		}
 		
 		
 		void MainForm_Load(object sender, EventArgs e)
 		{
 			LoadMacros();
+			
+			if (GoToMacro.Length > 0)
+			{
+				var nodes = tvList.Nodes.Find(GoToMacro, true);
+				if (nodes.Length > 0) tvList.SelectedNode = nodes[0];
+			}
 		}
 		
 		void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -72,6 +98,24 @@ namespace Macro_Browser
 			tCode.Text = (e.Node.Tag as MacroData).Code;
 		}
 		
+		void tvList_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+		{
+			if (e.Button != MouseButtons.Left) return;
+			var macro = e.Node.Tag as MacroData;
+			
+			switch (ViewerMode)
+			{
+				case ViewerModes.Enabled:
+					if (Settings.Viewer.Length > 0 && File.Exists(Settings.Viewer))
+						Process.Start(Settings.Viewer, Settings.ViewerArgs.Replace("%f", macro.File).Replace("%l", macro.Line.ToString()));
+					break;
+				case ViewerModes.Return:
+					Console.Write(macro.File + "\t" + macro.Line);
+					Application.Exit();
+					break;
+			}
+		}
+		
 		
 		void LoadMacros()
 		{
@@ -104,7 +148,7 @@ namespace Macro_Browser
 					else if ((m = rx_define.Match(str)).Success)
 					{
 						macro = m.Groups["name"].Value;
-						line = i;
+						line = i + 1;
 						code.Add(str);
 					}
 				}
@@ -116,7 +160,7 @@ namespace Macro_Browser
 			tvList.Nodes.Clear();
 			foreach (MacroData macro in Macros)
 			{
-				var node = tvList.Nodes.Add(macro.Name);
+				var node = tvList.Nodes.Add(macro.Name, macro.Name);
 				node.Tag = macro;
 			}
 			tvList.Sort();

@@ -9,6 +9,9 @@ using System.Collections.Generic;
 
 namespace Macro_Browser
 {
+	public enum ViewerModes {Enabled, Disabled, Return};
+	
+	
 	public class MacroData
 	{
 		public string Name, Code, File;

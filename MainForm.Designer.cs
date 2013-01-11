@@ -65,6 +65,7 @@ namespace Macro_Browser
 			this.tvList.ShowRootLines = false;
 			this.tvList.Size = new System.Drawing.Size(171, 312);
 			this.tvList.TabIndex = 0;
+			this.tvList.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tvList_NodeMouseDoubleClick);
 			this.tvList.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvList_AfterSelect);
 			// 
 			// tCode
