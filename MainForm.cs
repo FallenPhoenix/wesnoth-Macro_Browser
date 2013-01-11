@@ -44,6 +44,12 @@ namespace Macro_Browser
 			if (Settings.Window_Width > 0) this.Width = Settings.Window_Width;
 			if (Settings.Window_Height > 0) this.Height = Settings.Window_Height;
 			if (Settings.Window_Separator > 0) splitContainer.SplitterDistance = Settings.Window_Separator;
+			if (Settings.Window_Maximized)
+			{
+				var screen = Screen.PrimaryScreen.WorkingArea.Size;
+				this.Location = new Point((screen.Width - Width) / 2, (screen.Height - Height) / 2);
+				this.WindowState = FormWindowState.Maximized;
+			}
 			#endregion
 			
 			#region Обработка аргументов
@@ -70,7 +76,7 @@ namespace Macro_Browser
 			}
 			#endregion
 		}
-
+		
 		
 		void MainForm_Load(object sender, EventArgs e)
 		{
@@ -81,14 +87,25 @@ namespace Macro_Browser
 				var nodes = tvList.Nodes.Find(GoToMacro, true);
 				if (nodes.Length > 0) tvList.SelectedNode = nodes[0];
 			}
+			
+			this.SizeChanged += new EventHandler(MainForm_SizeChanged);
 		}
 		
 		void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			Settings.Window_Width = this.Width;
-			Settings.Window_Height = this.Height;
+			bool normal = (this.WindowState == FormWindowState.Normal);
+			Settings.Window_Width = normal ? this.Width : this.RestoreBounds.Width;
+			Settings.Window_Height = normal ? this.Height : this.RestoreBounds.Height;
 			Settings.Window_Separator = splitContainer.SplitterDistance;
+			//Settings.Window_Maximized = (this.WindowState == FormWindowState.Maximized);
 			Settings.Save();
+		}
+		
+		void MainForm_SizeChanged(object sender, EventArgs e)
+		{
+			// Потому что через свойства нельзя узнать, какое было состояние до сворачивания
+			if (this.WindowState != FormWindowState.Minimized)
+				Settings.Window_Maximized = (this.WindowState == FormWindowState.Maximized);
 		}
 		
 		void tsToolBar_ItemClicked(object sender, ToolStripItemClickedEventArgs e)

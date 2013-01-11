@@ -22,6 +22,7 @@ namespace Macro_Browser
 		public static int Window_Width;
 		public static int Window_Height;
 		public static int Window_Separator;
+		public static bool Window_Maximized;
 		
 		public static string MacroPath
 		{
@@ -38,7 +39,7 @@ namespace Macro_Browser
 			{
 				var config = ParseIni(Ini, "_");
 				var fields = typeof(Settings).GetFields();
-				string val; int ival;
+				string val; int ival; bool bval;
 				foreach (FieldInfo field in fields)
 				{
 					var type = field.FieldType.ToString();
@@ -54,6 +55,10 @@ namespace Macro_Browser
 						case "System.Int32":
 							if (!int.TryParse(val, out ival)) ival = -1;
 							field.SetValue(null, ival);
+							break;
+						case "System.Boolean":
+							if (bool.TryParse(val, out bval))
+								field.SetValue(null, bval);
 							break;
 					}
 				}
