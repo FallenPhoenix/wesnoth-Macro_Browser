@@ -36,11 +36,16 @@ namespace Macro_Browser
 			
 			foreach (string arg in args)
 			{
-				var kvp = arg.ToUpper().Split(new[]{'='}, 2);
-				switch (kvp[0])
+				var kvp = arg.Split(new[]{'='}, 2);
+				switch (kvp[0].ToLower())
 				{
-					case "-GOTO": GoToMacro = kvp[1]; break;
-					case "-OPENVIEWER":
+					case "-title":  // Заголовок окна
+						this.Text = kvp[1];
+						break;
+					case "-goto":  // Переход к макросу
+						GoToMacro = kvp[1].ToUpper();
+						break;
+					case "-openviewer":  // Открытие макросов по даблклику
 						try
 						{
 							var mode = (ViewerModes)Enum.Parse(typeof(ViewerModes), kvp[1], true);
