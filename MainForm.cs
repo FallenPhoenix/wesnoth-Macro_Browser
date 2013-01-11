@@ -17,9 +17,12 @@ namespace Macro_Browser
 	/// <summary> Главное окно программы. </summary>
 	public partial class MainForm : Form
 	{
-		MacroDataCollection Macros = new MacroDataCollection();
-		ViewerModes ViewerMode = ViewerModes.Enabled;
 		string GoToMacro = "";
+		ViewerModes ViewerMode = ViewerModes.Enabled;
+		MacroDataCollection Macros = new MacroDataCollection();
+		string[] MacroFiles;
+		ToolStripDropDownMenu tsdFilter;
+		bool FilterChanged;
 		
 		public MainForm(string[] args)
 		{
@@ -28,12 +31,22 @@ namespace Macro_Browser
 			//
 			InitializeComponent();
 			
+			tsdFilter = new ToolStripDropDownMenu();
+			tsdFilter.RenderMode = ToolStripRenderMode.System;
+			tsdFilter.ItemClicked += new ToolStripItemClickedEventHandler(tsdFilter_ItemClicked);
+			tsdFilter.Closing += new ToolStripDropDownClosingEventHandler(tsdFilter_Closing);
+			tsdFilter.Closed += new ToolStripDropDownClosedEventHandler(tsdFilter_Closed);
+			tsbFilter.DropDown = tsdFilter;
+			
+			#region Загрузка конфига
 			Settings.Ini = Path.ChangeExtension(Application.ExecutablePath, "ini");
 			Settings.Load();
 			if (Settings.Window_Width > 0) this.Width = Settings.Window_Width;
 			if (Settings.Window_Height > 0) this.Height = Settings.Window_Height;
 			if (Settings.Window_Separator > 0) splitContainer.SplitterDistance = Settings.Window_Separator;
+			#endregion
 			
+			#region Обработка аргументов
 			foreach (string arg in args)
 			{
 				var kvp = arg.Split(new[]{'='}, 2);
@@ -55,8 +68,9 @@ namespace Macro_Browser
 						break;
 				}
 			}
+			#endregion
 		}
-		
+
 		
 		void MainForm_Load(object sender, EventArgs e)
 		{
@@ -89,6 +103,39 @@ namespace Macro_Browser
 					if (settings.NeedRefresh) LoadMacros();
 					break;
 			}
+		}
+		
+		void tsdFilter_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		{
+			var item = e.ClickedItem as ToolStripMenuItem;
+			bool state = !item.Checked;
+			if (Control.ModifierKeys == Keys.Shift)
+				foreach (ToolStripMenuItem li in tsdFilter.Items)  li.Checked = state;
+			else item.Checked = state;
+			FilterChanged = true;
+		}
+		
+		void tsdFilter_Closing(object sender, ToolStripDropDownClosingEventArgs e)
+		{
+			e.Cancel = (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked);
+		}
+		
+		void tsdFilter_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+		{
+			if (!FilterChanged) return;
+			FilterChanged = false;
+			
+			var disabled = new List<string>();
+			foreach (ToolStripMenuItem item in tsdFilter.Items)
+				if (!item.Checked) disabled.Add(item.Text);
+			Settings.DisabledFiles = disabled.ToArray();
+			tmRefresh.Start();
+		}
+		
+		void tmRefresh_Tick(object sender, EventArgs e)
+		{
+			tmRefresh.Stop();
+			RefreshTree();
 		}
 		
 		void tSearch_TextChanged(object sender, EventArgs e)
@@ -124,69 +171,83 @@ namespace Macro_Browser
 		
 		void LoadMacros()
 		{
-			#region Анализ файлов
 			Macros = new MacroDataCollection();
 			var rx_define = new Regex(@"^\s*#define\s+(?<name>[a-z_][a-z_0-9:]*).*", RegexOptions.IgnoreCase);
 			var rx_enddef = new Regex(@"^.*?#enddef\s*$", RegexOptions.IgnoreCase);
-			var files = Directory.GetFiles(Settings.MacroPath, "*.cfg");
-			Array.Sort(files);
+			MacroFiles = Directory.GetFiles(Settings.MacroPath, "*.cfg");
+			Array.Sort(MacroFiles);
 			Match m;
 			var code = new List<string>();
-			foreach (string file in files)
+			foreach (string file in MacroFiles)
 			{
-				var macro = string.Empty;
+				var macro_name = string.Empty;
 				var line = 0;
 				var data = File.ReadAllLines(file);
 				for (int i = 0; i < data.Length; i++)
 				{
 					var str = data[i];
-					if (macro.Length > 0)
+					if (macro_name.Length > 0)
 					{
 						code.Add(str);
-						if (macro.Length > 0 && (m = rx_enddef.Match(str)).Success)
+						if (macro_name.Length > 0 && (m = rx_enddef.Match(str)).Success)
 						{
-							Macros.Add(macro, string.Join("\r\n", code.ToArray()), file, line);
-							macro = string.Empty;
+							var macro = Macros.Add(macro_name, string.Join("\r\n", code.ToArray()), file, line);
+							macro.Node = new TreeNode()
+							{
+								Name = macro_name,
+								Text = macro_name,
+								Tag = macro
+							};
+							macro_name = string.Empty;
 							code.Clear();	
 						}
 					}
 					else if ((m = rx_define.Match(str)).Success)
 					{
-						macro = m.Groups["name"].Value;
+						macro_name = m.Groups["name"].Value;
 						line = i + 1;
 						code.Add(str);
 					}
 				}
 			}
-			#endregion
 			
-			#region Заполнение списка
-			tvList.BeginUpdate();
-			tvList.Nodes.Clear();
-			foreach (MacroData macro in Macros)
-			{
-				var node = tvList.Nodes.Add(macro.Name, macro.Name);
-				node.Tag = macro;
-			}
-			tvList.Sort();
-			tvList.EndUpdate();
-			
-			// Фильтр
-			// TODO: Сделать обработку фильтра и сносный внешний вид для этой менюшки: по дефолту слишком большие отступы.
-			tsbFilter.DropDownItems.Clear();
-			foreach (string file in files)
-			{
-				var item = new ToolStripMenuItem()
-				{
-					Text = Path.GetFileName(file),
-					Height = 12,
-					CheckOnClick = true
-				};
-				tsbFilter.DropDownItems.Add(item);
-			}
-			#endregion
+			RefreshTree();
+			RefreshFilter();
 		}
 
+		void RefreshTree()
+		{
+			if (MacroFiles == null) return;
+			var nodes = new List<TreeNode>();
+			foreach (MacroData macro in Macros)
+				if (Array.IndexOf(Settings.DisabledFiles, Path.GetFileName(macro.File)) < 0)
+					nodes.Add(macro.Node);
+			var selected = tvList.SelectedNode;
+			tvList.BeginUpdate();
+			tvList.Nodes.Clear();
+			tvList.Nodes.AddRange(nodes.ToArray());
+			tvList.Sort();
+			tvList.SelectedNode = selected;
+			tvList.EndUpdate();
+		}
+		
+		void RefreshFilter()
+		{
+			// TODO: Сделать обработку фильтра и сносный внешний вид для этой менюшки: по дефолту слишком большие отступы.
+			tsdFilter.Items.Clear();
+			foreach (string file in MacroFiles)
+			{
+				var name = Path.GetFileName(file);
+				var item = new ToolStripMenuItem()
+				{
+					Text = name,
+					Height = 12,
+					Checked = (Array.IndexOf(Settings.DisabledFiles, name) < 0)
+				};
+				tsdFilter.Items.Add(item);
+			}
+		}
+		
 		void Error(string msg)
 		{
 			MessageBox.Show(msg, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);

@@ -34,6 +34,7 @@ namespace Macro_Browser
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.tvList = new System.Windows.Forms.TreeView();
 			this.tCode = new System.Windows.Forms.TextBox();
@@ -45,6 +46,7 @@ namespace Macro_Browser
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.tsbWordWrap = new System.Windows.Forms.ToolStripButton();
 			this.tsbSettings = new System.Windows.Forms.ToolStripButton();
+			this.tmRefresh = new System.Windows.Forms.Timer(this.components);
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
 			this.splitContainer.SuspendLayout();
@@ -175,6 +177,11 @@ namespace Macro_Browser
 			this.tsbSettings.Size = new System.Drawing.Size(23, 22);
 			this.tsbSettings.Text = "Настройки";
 			// 
+			// tmRefresh
+			// 
+			this.tmRefresh.Interval = 50;
+			this.tmRefresh.Tick += new System.EventHandler(this.tmRefresh_Tick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -199,6 +206,7 @@ namespace Macro_Browser
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.Timer tmRefresh;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripDropDownButton tsbFilter;
 		private System.Windows.Forms.ToolStripButton tsbSettings;

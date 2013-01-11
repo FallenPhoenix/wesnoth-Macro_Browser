@@ -18,6 +18,7 @@ namespace Macro_Browser
 		public static string GamePath;
 		public static string Viewer;
 		public static string ViewerArgs;
+		public static string[] DisabledFiles;
 		public static int Window_Width;
 		public static int Window_Height;
 		public static int Window_Separator;
@@ -46,6 +47,9 @@ namespace Macro_Browser
 					{
 						case "System.String":
 							field.SetValue(null, val);
+							break;
+						case "System.String[]":
+							field.SetValue(null, val.Split(','));
 							break;
 						case "System.Int32":
 							if (!int.TryParse(val, out ival)) ival = -1;
@@ -77,7 +81,9 @@ namespace Macro_Browser
 						category = m.Groups["category"].Value;
 						data.Add(""); data.Add("[" + category + "]");
 					}
-					data.Add(m.Groups["key"].Value + "=" + field.GetValue(null));
+					object val = field.GetValue(null);
+					if (val is string[]) val = string.Join(",", val as string[]);
+					data.Add(m.Groups["key"].Value + "=" + val);
 				}
 				File.WriteAllLines(Ini, data.ToArray());
 				return true;

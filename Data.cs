@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Macro_Browser
 {
@@ -16,6 +17,7 @@ namespace Macro_Browser
 	{
 		public string Name, Code, File;
 		public int Line;
+		public TreeNode Node;
 	}
 	
 	public class MacroDataCollection : List<MacroData>
