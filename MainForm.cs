@@ -80,6 +80,16 @@ namespace Macro_Browser
 		
 		void MainForm_Load(object sender, EventArgs e)
 		{
+			if (!Directory.Exists(Settings.GamePath))
+			{
+				var fb = new FolderBrowserDialog()
+				{
+					Description = "Укажите корневую папку игры.",
+					SelectedPath = Settings.GamePath
+				};
+				if (fb.ShowDialog() == DialogResult.OK) Settings.GamePath = fb.SelectedPath;
+			}
+			
 			LoadMacros();
 			
 			if (GoToMacro.Length > 0)
@@ -189,10 +199,11 @@ namespace Macro_Browser
 		void LoadMacros()
 		{
 			Macros = new MacroDataCollection();
-			var rx_define = new Regex(@"^\s*#define\s+(?<name>[a-z_][a-z_0-9:]*).*", RegexOptions.IgnoreCase);
-			var rx_enddef = new Regex(@"^.*?#enddef\s*$", RegexOptions.IgnoreCase);
+			if (!Directory.Exists(Settings.MacroPath)) return;
 			MacroFiles = Directory.GetFiles(Settings.MacroPath, "*.cfg");
 			Array.Sort(MacroFiles);
+			var rx_define = new Regex(@"^\s*#define\s+(?<name>[a-z_][a-z_0-9:]*).*", RegexOptions.IgnoreCase);
+			var rx_enddef = new Regex(@"^.*?#enddef\s*$", RegexOptions.IgnoreCase);
 			Match m;
 			var code = new List<string>();
 			foreach (string file in MacroFiles)
