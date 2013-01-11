@@ -66,7 +66,7 @@ namespace Macro_Browser
 			this.tvList.ShowPlusMinus = false;
 			this.tvList.ShowRootLines = false;
 			this.tvList.Size = new System.Drawing.Size(171, 312);
-			this.tvList.TabIndex = 0;
+			this.tvList.TabIndex = 1;
 			this.tvList.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.tvList_NodeMouseDoubleClick);
 			this.tvList.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvList_AfterSelect);
 			// 
@@ -81,7 +81,7 @@ namespace Macro_Browser
 			this.tCode.ReadOnly = true;
 			this.tCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
 			this.tCode.Size = new System.Drawing.Size(353, 336);
-			this.tCode.TabIndex = 1;
+			this.tCode.TabIndex = 0;
 			this.tCode.WordWrap = false;
 			// 
 			// splitContainer
@@ -112,7 +112,7 @@ namespace Macro_Browser
 			this.tSearch.Location = new System.Drawing.Point(0, 0);
 			this.tSearch.Name = "tSearch";
 			this.tSearch.Size = new System.Drawing.Size(171, 20);
-			this.tSearch.TabIndex = 1;
+			this.tSearch.TabIndex = 0;
 			this.tSearch.TextChanged += new System.EventHandler(this.tSearch_TextChanged);
 			// 
 			// tsToolBar
@@ -125,7 +125,7 @@ namespace Macro_Browser
 			this.tsToolBar.Location = new System.Drawing.Point(0, 0);
 			this.tsToolBar.Name = "tsToolBar";
 			this.tsToolBar.Size = new System.Drawing.Size(552, 25);
-			this.tsToolBar.TabIndex = 3;
+			this.tsToolBar.TabIndex = 0;
 			this.tsToolBar.Text = "toolStrip1";
 			this.tsToolBar.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.tsToolBar_ItemClicked);
 			// 

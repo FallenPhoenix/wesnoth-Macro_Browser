@@ -54,7 +54,7 @@ namespace Macro_Browser
 			this.tGamePath.Location = new System.Drawing.Point(12, 34);
 			this.tGamePath.Name = "tGamePath";
 			this.tGamePath.Size = new System.Drawing.Size(388, 20);
-			this.tGamePath.TabIndex = 3;
+			this.tGamePath.TabIndex = 2;
 			// 
 			// label1
 			// 
@@ -71,7 +71,7 @@ namespace Macro_Browser
 			this.bGamePath.Location = new System.Drawing.Point(406, 33);
 			this.bGamePath.Name = "bGamePath";
 			this.bGamePath.Size = new System.Drawing.Size(24, 22);
-			this.bGamePath.TabIndex = 4;
+			this.bGamePath.TabIndex = 3;
 			this.bGamePath.Text = "...";
 			this.bGamePath.UseVisualStyleBackColor = true;
 			this.bGamePath.Click += new System.EventHandler(this.bGamePath_Click);
@@ -105,7 +105,7 @@ namespace Macro_Browser
 			this.tViewer.Location = new System.Drawing.Point(12, 83);
 			this.tViewer.Name = "tViewer";
 			this.tViewer.Size = new System.Drawing.Size(238, 20);
-			this.tViewer.TabIndex = 5;
+			this.tViewer.TabIndex = 4;
 			// 
 			// label2
 			// 
@@ -122,7 +122,7 @@ namespace Macro_Browser
 			this.bViewer.Location = new System.Drawing.Point(256, 82);
 			this.bViewer.Name = "bViewer";
 			this.bViewer.Size = new System.Drawing.Size(24, 22);
-			this.bViewer.TabIndex = 7;
+			this.bViewer.TabIndex = 5;
 			this.bViewer.Text = "...";
 			this.bViewer.UseVisualStyleBackColor = true;
 			this.bViewer.Click += new System.EventHandler(this.bViewer_Click);
@@ -133,7 +133,7 @@ namespace Macro_Browser
 			this.tViewerArgs.Location = new System.Drawing.Point(298, 83);
 			this.tViewerArgs.Name = "tViewerArgs";
 			this.tViewerArgs.Size = new System.Drawing.Size(102, 20);
-			this.tViewerArgs.TabIndex = 8;
+			this.tViewerArgs.TabIndex = 6;
 			// 
 			// label3
 			// 
@@ -151,7 +151,7 @@ namespace Macro_Browser
 			this.bViewerArgs.Location = new System.Drawing.Point(406, 82);
 			this.bViewerArgs.Name = "bViewerArgs";
 			this.bViewerArgs.Size = new System.Drawing.Size(24, 22);
-			this.bViewerArgs.TabIndex = 10;
+			this.bViewerArgs.TabIndex = 7;
 			this.bViewerArgs.Text = "...";
 			this.bViewerArgs.UseVisualStyleBackColor = true;
 			this.bViewerArgs.Click += new System.EventHandler(this.bViewerArgs_Click);
