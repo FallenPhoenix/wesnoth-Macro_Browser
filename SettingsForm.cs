@@ -14,13 +14,22 @@ namespace Macro_Browser
 	/// <summary> Окно настроек. </summary>
 	public partial class SettingsForm : Form
 	{
-		// TODO: Сделать выпадающий список переменных для аргументов.
+		ToolStripDropDown tsdViewerArgs;
+		
 		public SettingsForm()
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
+			
+			tsdViewerArgs = new ToolStripDropDown();
+			tsdViewerArgs.Items.AddRange(new[]{
+				new ToolStripButton(){Name = "%f", Text = "%f - Файл макроса"},
+				new ToolStripButton(){Name = "%l", Text = "%l - Номер строки"}
+			});
+			tsdViewerArgs.ItemClicked += new ToolStripItemClickedEventHandler(tsdViewerArgs_ItemClicked);
+			tsdViewerArgs.Closed += new ToolStripDropDownClosedEventHandler(tsdViewerArgs_Closed);
 			
 			NeedRefresh = false;
 			tGamePath.Text = Settings.GamePath;
@@ -52,6 +61,23 @@ namespace Macro_Browser
 				FileName = tViewer.Text
 			};
 			if (of.ShowDialog() == DialogResult.OK) tViewer.Text = of.FileName;
+		}
+		
+		void bViewerArgs_Click(object sender, EventArgs e)
+		{
+			tViewerArgs.HideSelection = (tViewerArgs.SelectionLength == 0);
+			//tsdViewerArgs.Show(bViewerArgs, bViewerArgs.Width + 2, 0);
+			tsdViewerArgs.Show(bViewerArgs, new Point(bViewerArgs.Width, bViewerArgs.Height + 2), ToolStripDropDownDirection.BelowLeft);
+		}
+		
+		void tsdViewerArgs_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		{
+			tViewerArgs.Text = tViewerArgs.Text.Remove(tViewerArgs.SelectionStart, tViewerArgs.SelectionLength).Insert(tViewerArgs.SelectionStart, e.ClickedItem.Name);
+		}
+		
+		void tsdViewerArgs_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+		{
+			tViewerArgs.HideSelection = true;
 		}
 		
 		void bOK_Click(object sender, EventArgs e)

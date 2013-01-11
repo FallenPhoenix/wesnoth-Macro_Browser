@@ -154,6 +154,7 @@ namespace Macro_Browser
 			this.bViewerArgs.TabIndex = 10;
 			this.bViewerArgs.Text = "...";
 			this.bViewerArgs.UseVisualStyleBackColor = true;
+			this.bViewerArgs.Click += new System.EventHandler(this.bViewerArgs_Click);
 			// 
 			// SettingsForm
 			// 
