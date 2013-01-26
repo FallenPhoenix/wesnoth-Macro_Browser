@@ -15,14 +15,14 @@ namespace Macro_Browser
 	public static class Settings
 	{
 		#region Данные программы
-		public static string GamePath;
-		public static string Viewer;
-		public static string ViewerArgs;
-		public static string[] DisabledFiles;
-		public static int Window_Width;
-		public static int Window_Height;
-		public static int Window_Separator;
-		public static bool Window_Maximized;
+		public static string GamePath = "";
+		public static string Viewer = "";
+		public static string ViewerArgs = "";
+		public static string[] DisabledFiles = new string[0];
+		public static int Window_Width = -1;
+		public static int Window_Height = -1;
+		public static int Window_Separator = -1;
+		public static bool Window_Maximized = false;
 		
 		public static string MacroPath
 		{

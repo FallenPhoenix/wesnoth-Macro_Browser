@@ -85,7 +85,6 @@ namespace Macro_Browser
 				var fb = new FolderBrowserDialog()
 				{
 					Description = "Укажите корневую папку игры.",
-					SelectedPath = Settings.GamePath
 				};
 				if (fb.ShowDialog() == DialogResult.OK) Settings.GamePath = fb.SelectedPath;
 			}
